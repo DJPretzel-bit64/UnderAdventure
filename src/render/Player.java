@@ -24,12 +24,14 @@ public class Player extends Entity {
     public void setDefaultValues() {
         x = gp.screenWidth/2;
         y = gp.screenHeight/2;
+        velocityY = y;
         speed = gp.scale * gp.speed;
         direction = "left";
         frameNum = 1;
         step = 1;
         velocity = 0;
         timeInAir = 0;
+        entity = new Rectangle(x + 25, y + 4, 16, 60);
     }
 
     public void getPlayerImage() {
@@ -64,10 +66,11 @@ public class Player extends Entity {
         }
         if(keyH.upPressed && !inAir) {
             inAir = true;
+            direction = "up";
         }
         if(inAir) {
-            velocity = -0.5*(timeInAir * timeInAir) + 8 * timeInAir;
-            y -= velocity;
+            velocity = -(10.00/63.00)*(timeInAir * timeInAir) + 6.17 * timeInAir;
+            y = (int) (velocityY - velocity);
             timeInAir++;
         }
         if(keyH.leftPressed || keyH.rightPressed || inAir) {

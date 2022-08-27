@@ -15,13 +15,13 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenRow = 9 * windowSize;
     public final int screenWidth = tileSize * maxScreenCol;
     public final int screenHeight = tileSize * maxScreenRow;
-    public final int speed = 2;
+    public final int speed = 4;
     int FPS = 60;
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this, keyH);
     World world = new World(this, keyH);
+    Player player = new Player(this, keyH);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -64,11 +64,13 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void update() {
+        world.update();
         player.update();
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
+        world.render(g2);
         player.draw(g2);
         g2.dispose();
     }

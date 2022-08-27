@@ -24,14 +24,13 @@ public class Player extends Entity {
     public void setDefaultValues() {
         x = gp.screenWidth/2;
         y = gp.screenHeight/2;
-        velocityY = y;
         speed = gp.scale * gp.speed;
         direction = "left";
         frameNum = 1;
         step = 1;
-        velocity = 0;
-        timeInAir = 0;
         entity = new Rectangle(x + 25, y + 4, 16, 60);
+        showHitBoxes = false;
+        lastTime = System.nanoTime() + 1000000000;
     }
 
     public void getPlayerImage() {
@@ -56,24 +55,17 @@ public class Player extends Entity {
     }
 
     public void update() {
-        if(keyH.leftPressed) {
-            direction = "left";
-            x -= speed;
+        if(keyH.showHitBoxes && !showHitBoxes && System.nanoTime() > lastTime + 100000000) {
+            lastTime = System.nanoTime();
+            showHitBoxes = true;
         }
-        if(keyH.rightPressed) {
-            direction = "right";
-            x += speed;
+
+        if(keyH.showHitBoxes && showHitBoxes && System.nanoTime() > lastTime + 100000000) {
+            lastTime = System.nanoTime();
+            showHitBoxes = false;
         }
-        if(keyH.upPressed && !inAir) {
-            inAir = true;
-            direction = "up";
-        }
-        if(inAir) {
-            velocity = -(10.00/63.00)*(timeInAir * timeInAir) + 6.17 * timeInAir;
-            y = (int) (velocityY - velocity);
-            timeInAir++;
-        }
-        if(keyH.leftPressed || keyH.rightPressed || inAir) {
+
+        if(keyH.leftPressed || keyH.rightPressed || World.inAir) {
             step ++;
             if(step > 5) {
                 if(frameNum == 1) {
@@ -113,5 +105,9 @@ public class Player extends Entity {
             case "up" -> image = up1;
         }
         g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        if(showHitBoxes) {
+            g2.setColor(Color.orange);
+            g2.draw(entity);
+        }
     }
 }

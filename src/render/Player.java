@@ -55,12 +55,12 @@ public class Player extends Entity {
     }
 
     public void update() {
-        if(keyH.showHitBoxes && !showHitBoxes && System.nanoTime() > lastTime + 100000000) {
+        if(keyH.showHitBoxes && !showHitBoxes && System.nanoTime() > lastTime + 200000000) {
             lastTime = System.nanoTime();
             showHitBoxes = true;
         }
 
-        if(keyH.showHitBoxes && showHitBoxes && System.nanoTime() > lastTime + 100000000) {
+        if(keyH.showHitBoxes && showHitBoxes && System.nanoTime() > lastTime + 200000000) {
             lastTime = System.nanoTime();
             showHitBoxes = false;
         }

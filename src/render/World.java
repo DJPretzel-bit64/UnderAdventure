@@ -17,8 +17,8 @@ public class World {
     public Polygon world = new Polygon();
     public Shape worldBox = world;
     public int[][] rawWorld = new int[64][64];
-    public int offsetX, offsetY, timeInAir, velocityY;
-    public static boolean inAir, falling;
+    public int offsetX, offsetY, timeInAir, velocityY, beforeX;
+    public static boolean inAir, falling, check, isFirstTime;
     public double velocity;
 
     GamePanel gp;
@@ -40,30 +40,40 @@ public class World {
                 if((j == 63 && i <= 10) || j == 6) world.addPoint(i * 64, j * 64);
             }
         }
+        world.addPoint(0, 320);
+        world.addPoint(320, 320);
+        world.addPoint(320, 640);
+        world.addPoint(640, 640);
+        world.addPoint(0, 640);
         offsetX = 0;
         offsetY = 0;
         inAir = true;
         falling = true;
+        check = true;
+        isFirstTime = true;
         velocity = 0;
-        timeInAir = 0;
         velocityY = offsetY;
+        timeInAir = 0;
     }
 
     public void update() {
         if(keyH.leftPressed) {
+            beforeX = offsetX - 5;
             offsetX += speed;
             Player.direction = "left";
+            if(worldBox.intersects((Rectangle2D) Player.entity)) offsetX = beforeX;
         }
 
         if(keyH.rightPressed) {
+            beforeX = offsetX + 5;
             offsetX -= speed;
             Player.direction = "right";
+            if(worldBox.intersects((Rectangle2D) Player.entity)) offsetX = beforeX;
         }
 
-        if(keyH.upPressed && !inAir) {
+        if(keyH.upPressed) {
             inAir = true;
             falling = false;
-            Player.direction = "up";
         }
 
         if(inAir) {
@@ -73,18 +83,21 @@ public class World {
             timeInAir++;
         }
 
-        world.reset();
-        for(int j = 0; j < 64; j++) {
-            for(int i = 0; i < 64; i++) {
-                if(j == 63 || (j == 6 && i <= 10)) world.addPoint(i * 64 + offsetX, j * 64 + offsetY);
-            }
+        else velocityY = offsetY;
+
+        if(worldBox.intersects((Rectangle2D) Player.entity)) {
+            if(inAir || falling) offsetY += 15;
+            inAir = false;
+            timeInAir = 0;
+            velocityY = offsetY;
         }
 
-        if(worldBox.intersects((Rectangle2D) Player.entity)){
-            inAir = false;
-            velocity = 0;
-            timeInAir = 0;
-        }
+        world.reset();
+        world.addPoint(offsetX, 320 + offsetY);
+        world.addPoint(320 + offsetX, 320 + offsetY);
+        world.addPoint(320 + offsetX, 640 + offsetY);
+        world.addPoint(640 + offsetX, 640 + offsetY);
+        world.addPoint(offsetX, 640 + offsetY);
     }
 
     public void getWorldImages() {

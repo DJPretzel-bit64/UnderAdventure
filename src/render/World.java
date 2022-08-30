@@ -18,7 +18,7 @@ public class World {
     public Shape worldBox = world;
     public int[][] rawWorld = new int[64][64];
     public int offsetX, offsetY, timeInAir, velocityY;
-    public static boolean inAir, falling, horizontalMov;
+    public static boolean inAir, falling, jumping;
     public double velocity;
 
     GamePanel gp;
@@ -47,31 +47,36 @@ public class World {
         world.addPoint(0, 640);
         offsetX = 0;
         offsetY = 0;
-        inAir = false;
-        falling = false;
-        horizontalMov = false;
+        inAir = true;
+        falling = true;
+        jumping = false;
         velocity = 0;
         velocityY = offsetY;
         timeInAir = 0;
     }
 
     public void update() {
-        horizontalMov = false;
+        if(!jumping && !worldBox.intersects(new Rectangle(Player.entity.getBounds().x, Player.entity.getBounds().y + 1, Player.entity.getBounds().width, Player.entity.getBounds().height))) {
+            inAir = true;
+            falling = true;
+        }
+
         if(keyH.leftPressed) {
-            horizontalMov = true;
             if(!worldBox.intersects(new Rectangle(Player.entity.getBounds().x - speed, Player.entity.getBounds().y, Player.entity.getBounds().width, Player.entity.getBounds().height))) offsetX += speed;
             Player.direction = "left";
         }
 
         if(keyH.rightPressed) {
-            horizontalMov = true;
             if(!worldBox.intersects(new Rectangle(Player.entity.getBounds().x + speed, Player.entity.getBounds().y, Player.entity.getBounds().width, Player.entity.getBounds().height))) offsetX -= speed;
             Player.direction = "right";
         }
 
         if(keyH.upPressed) {
-            if(!worldBox.intersects((Rectangle2D) Player.entity)) inAir = true;
-            falling = false;
+            if(!worldBox.intersects((Rectangle2D) Player.entity)) {
+                inAir = true;
+                jumping = true;
+                falling = false;
+            }
         }
 
         if(worldBox.intersects((Rectangle2D) Player.entity) && inAir) {
@@ -85,6 +90,8 @@ public class World {
                 world.addPoint(640 + offsetX, 960 + offsetY);
                 world.addPoint(offsetX, 960 + offsetY);
             }
+            jumping = false;
+            falling = false;
             inAir = false;
             timeInAir = 0;
             velocityY = offsetY;

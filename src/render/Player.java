@@ -65,7 +65,7 @@ public class Player extends Entity {
             showHitBoxes = false;
         }
 
-        if(keyH.leftPressed || keyH.rightPressed || World.inAir) {
+        if(keyH.leftPressed || keyH.rightPressed || keyH.upPressed) {
             step ++;
             if(step > 5) {
                 if(frameNum == 1) {

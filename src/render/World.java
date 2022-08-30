@@ -17,8 +17,8 @@ public class World {
     public Polygon world = new Polygon();
     public Shape worldBox = world;
     public int[][] rawWorld = new int[64][64];
-    public int offsetX, offsetY, timeInAir, velocityY, beforeX;
-    public static boolean inAir, falling, check, isFirstTime;
+    public int offsetX, offsetY, timeInAir, velocityY;
+    public static boolean inAir, falling, horizontalMov;
     public double velocity;
 
     GamePanel gp;
@@ -49,30 +49,32 @@ public class World {
         offsetY = 0;
         inAir = false;
         falling = false;
-        check = true;
-        isFirstTime = true;
+        horizontalMov = false;
         velocity = 0;
         velocityY = offsetY;
         timeInAir = 0;
     }
 
     public void update() {
+        horizontalMov = false;
         if(keyH.leftPressed) {
-            offsetX += speed;
+            horizontalMov = true;
+            if(!worldBox.intersects(new Rectangle(Player.entity.getBounds().x - speed, Player.entity.getBounds().y, Player.entity.getBounds().width, Player.entity.getBounds().height))) offsetX += speed;
             Player.direction = "left";
         }
 
         if(keyH.rightPressed) {
-            offsetX -= speed;
+            horizontalMov = true;
+            if(!worldBox.intersects(new Rectangle(Player.entity.getBounds().x + speed, Player.entity.getBounds().y, Player.entity.getBounds().width, Player.entity.getBounds().height))) offsetX -= speed;
             Player.direction = "right";
         }
 
         if(keyH.upPressed) {
-            if(!worldBox.intersects((Rectangle2D) Player.entity))inAir = true;
+            if(!worldBox.intersects((Rectangle2D) Player.entity)) inAir = true;
             falling = false;
         }
 
-        if(worldBox.intersects((Rectangle2D) Player.entity)) {
+        if(worldBox.intersects((Rectangle2D) Player.entity) && inAir) {
             while(worldBox.intersects((Rectangle2D) Player.entity)) {
                 offsetY ++;
                 world.reset();

@@ -29,7 +29,7 @@ public class Player extends Entity {
         frameNum = 1;
         step = 1;
         entity = new Rectangle(x + 25, y + 4, 16, 60);
-        showHitBoxes = false;
+        showHitBoxes = true;
         lastTime = System.nanoTime() + 1000000000;
     }
 

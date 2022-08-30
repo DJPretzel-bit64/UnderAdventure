@@ -47,8 +47,8 @@ public class World {
         world.addPoint(0, 640);
         offsetX = 0;
         offsetY = 0;
-        inAir = true;
-        falling = true;
+        inAir = false;
+        falling = false;
         check = true;
         isFirstTime = true;
         velocity = 0;
@@ -58,22 +58,34 @@ public class World {
 
     public void update() {
         if(keyH.leftPressed) {
-            beforeX = offsetX - 5;
             offsetX += speed;
             Player.direction = "left";
-            if(worldBox.intersects((Rectangle2D) Player.entity)) offsetX = beforeX;
         }
 
         if(keyH.rightPressed) {
-            beforeX = offsetX + 5;
             offsetX -= speed;
             Player.direction = "right";
-            if(worldBox.intersects((Rectangle2D) Player.entity)) offsetX = beforeX;
         }
 
         if(keyH.upPressed) {
-            inAir = true;
+            if(!worldBox.intersects((Rectangle2D) Player.entity))inAir = true;
             falling = false;
+        }
+
+        if(worldBox.intersects((Rectangle2D) Player.entity)) {
+            while(worldBox.intersects((Rectangle2D) Player.entity)) {
+                offsetY ++;
+                world.reset();
+                world.addPoint(offsetX, 320 + offsetY);
+                world.addPoint(320 + offsetX, 320 + offsetY);
+                world.addPoint(320 + offsetX, 640 + offsetY);
+                world.addPoint(640 + offsetX, 640 + offsetY);
+                world.addPoint(640 + offsetX, 960 + offsetY);
+                world.addPoint(offsetX, 960 + offsetY);
+            }
+            inAir = false;
+            timeInAir = 0;
+            velocityY = offsetY;
         }
 
         if(inAir) {
@@ -83,21 +95,13 @@ public class World {
             timeInAir++;
         }
 
-        else velocityY = offsetY;
-
-        if(worldBox.intersects((Rectangle2D) Player.entity)) {
-            if(inAir || falling) offsetY += 15;
-            inAir = false;
-            timeInAir = 0;
-            velocityY = offsetY;
-        }
-
         world.reset();
         world.addPoint(offsetX, 320 + offsetY);
         world.addPoint(320 + offsetX, 320 + offsetY);
         world.addPoint(320 + offsetX, 640 + offsetY);
         world.addPoint(640 + offsetX, 640 + offsetY);
-        world.addPoint(offsetX, 640 + offsetY);
+        world.addPoint(640 + offsetX, 960 + offsetY);
+        world.addPoint(offsetX, 960 + offsetY);
     }
 
     public void getWorldImages() {
